@@ -1,22 +1,71 @@
-const express=require('express')
-const route=express.Router()
-const mongoose=require('mongoose')
+const express = require('express');
+const route = express.Router();
+const mongoose = require('mongoose');
 
-mongoose.connect('mongodb://127.0.0.1:27017/users');
+// Import User model or schema
+const User = require('../model/model'); // Replace '../model/model' with the correct path to your User model or schema
 
-const services=require('../services/render');
+// Import services module for rendering views
+const services = require('../services/render');
 
-const controller=require('../controller/controller')
+// Import controller module for handling API requests
+const controller = require('../controller/controller');
 
-route.get('/',services.homeRoutes)
+// Connect to MongoDB
+mongoose.connect('mongodb://127.0.0.1:27017/new_user');
 
-route.get('/add-user',services.add_user)
-route.get('/update-user',services.update_user)
+// Define routes
+route.get('/', services.homeRoutes);
 
-//api
-route.post('/api/users',controller.create)
-route.get('/api/users',controller.find)
+route.post('/users/:id/block', async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Update the user document with the provided id to set isBlocked to true
+    await User.updateOne({ _id: id }, { $set: { isBlocked: true } });
+
+    req.session.message = {
+      type: "info",
+      message: "User blocked successfully"
+    };
+    res.redirect("/admin");
+
+  } catch (err) {
+    req.session.message = {
+      type: "danger",
+      message: "error"
+    };
+    res.redirect("/admin");
+  }
+});
+
+route.post('/users/:id/unblock', async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Update the user document with the provided id to set isBlocked to false
+    await User.updateOne({ _id: id }, { $set: { isBlocked: false } });
+
+    req.session.message = {
+      type: "info",
+      message: "User unblocked successfully"
+    };
+    res.redirect("/admin");
+  } catch (err) {
+    req.session.message = {
+      type: "danger",
+      message: "error"
+    };
+  }
+});
+
+route.get('/add-user', services.add_user);
+route.get('/update-user', services.update_user);
+
+// Define API routes
+route.post('/api/users', controller.create);
+route.get('/api/users', controller.find);
 route.put('/api/users/:id', controller.update);
-route.delete('/api/users/:id',controller.delete);
+route.delete('/api/users/:id', controller.delete);
 
-module.exports=route;
+module.exports = route;

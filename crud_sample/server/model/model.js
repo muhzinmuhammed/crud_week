@@ -10,10 +10,15 @@ var schema=new mongoose.Schema({
         require:true,
         unique:true
     },
+    isBlocked: {
+        type: Boolean,
+        default: false
+      },
    gender:String,
    status:String,
    password:String
 })
 
-const UserDb=mongoose.model('userdb',schema)
+
+const UserDb=mongoose.model('users',schema)
 module.exports=UserDb

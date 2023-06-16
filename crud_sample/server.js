@@ -1,11 +1,17 @@
 const express=require('express')
 const dotenv=require('dotenv')
 const morgan=require('morgan')
-const mongoose=require('mongoose')
+
 const bodyParser=require('body-parser')
 const path=require('path')
 const bcrypt=require('bcrypt')
+const session = require('express-session');
+const nocashe=require('nocache')
+// The folder path for the files
+const folderPath = __dirname+'/Files';
+
 var UserDb=require('./server/model/model')
+const { name } = require('ejs')
 // const connectDB=require('./server/database/connection')
 const app=express()
 
@@ -14,13 +20,22 @@ dotenv.config({path:"config.env"});
 const PORT=process.env.PORT||8080
 
 
-mongoose.connect('mongodb://127.0.0.1:27017/users');
+
 //log requests
 app.use(morgan('tiny'))
 
 //mongodb connection
 
+app.use(nocashe())
 
+app.use(session({
+  secret: 'your secret key',
+  resave: false,
+  saveUninitialized: true,
+  cookie: {
+    maxAge: 1800000 // 30 minutes in milliseconds
+  }
+}));
 
 
 
@@ -29,39 +44,56 @@ app.use(bodyParser.urlencoded({extended:true}))
 app.set('view engine','ejs')
 // app.set('views',path.resolve(__dirname,"views/ejs"))
 
-app.post('/', (req, res) => {
-  if (req.body.email=='admin123@gmail.com') {
-
-    res.render('index', {users: 'users'});
-    
+function check_session(req,res,next){
+  if(req.session.authorized){
+    next()
   }else{
+    res.render('register');
+}
+}
 
-    res.render('home', {name: 'users'});
-
-  }
  
-});
+// GET request for single file
 
-app.get('/register', (req, res) => {
-  res.render('register', {messages:'users'});
-});
+
+app.get('/',check_session,(req,res)=>{
+  res.render('home',{name});
+})
 
 app.get('/login', (req, res) => {
-  res.render('login', {messages: 'users'});
+  res.render('login',  {messages: 'hai'});
 });
 
-app.post('/register', async (req, res) => {
+app.get('/admin',check_session,async(req,res)=>{
+  const data=await UserDb.find()
+  console.log(data);
+  res.render('index',{users:data})
+ 
+})
+
+app.get('/logout',(req,res)=>{
+  req.session.destroy()
+  console.log(req.session);
+  res.render('login');
+
+})
+
+
+app.post('/', async (req, res) => {
   const name = req.body.name;
   const email = req.body.email;
-  const password = req.body.password;
-  const gender = req.body.gender;
+  const gender =req.body.gender;
   const status = req.body.status;
+  const password = req.body.password;
+  
 
   try {
+
+   
     const existingUser = await UserDb.findOne({ email: email });
 
     if (existingUser) {
-      return res.render('login', { name: 'muhzin' });
+      return res.render('register', { name: 'Alredy exits' });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -69,38 +101,55 @@ app.post('/register', async (req, res) => {
     const newUser = new UserDb({
       name: name,
       email: email,
-      gender: gender,
-      status: status,
-      password: hashedPassword,
-     
+      gender:gender,
+      status:status,
+      password: hashedPassword
     });
-
+ 
     await newUser.save();
 
-    res.render('login');
+    req.session.admin=email
+    req.session.authorized=true
+   
+
+    res.render('login', { messages: 'hai' });
   } catch (error) {
     console.error(error);
     res.status(500).send('Error registering user');
   }
 });
   
-app.post('/login', async (req, res) => {
+app.post('/admin', async (req, res) => {
   const email = req.body.email;
+ 
   const password = req.body.password;
+
+  req.session.admin = email;
+  req.session.authorized = true;
 
   try {
     const user = await UserDb.findOne({ email: email });
+    
 
     if (!user) {
-      return res.send('Incorrect email or password.');
+      res.render("register", { alert: "Invalid entry" });
+      return;
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (isMatch) {
-      res.render('index', { users:'users' });
+      if (req.body.email === 'admin123@gmail.com') {
+        req.session.admin = email;
+        req.session.authorized = true;
+        res.redirect('/admin');
+      } else {
+        req.session.admin = email;
+        req.session.authorized = true;
+        res.redirect('/');
+      }
     } else {
-      res.send('Incorrect email or password.');
+      res.render("login", { message: "Invalid entry" });
     }
   } catch (error) {
     console.error(error);
@@ -109,10 +158,7 @@ app.post('/login', async (req, res) => {
 });
 
   
-
-
-  
-app.get('/search', (req, res) => {
+app.get('/search',check_session, (req, res) => {
     const query = req.query.name; // Get the search query from the URL query parameters
   
     // Perform the search using Mongoose
@@ -125,6 +171,12 @@ app.get('/search', (req, res) => {
         res.status(500).send('Internal Server Error');
       });
   });
+
+  
+  
+
+
+
 
   
   

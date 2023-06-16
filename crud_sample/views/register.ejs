@@ -76,15 +76,11 @@
   
           <div class="card bg-glass">
             <div class="card-body px-4 py-5 px-md-5">
-              <form  action="/register" method="POST" autocomplete="off">
+              <form  action="/" name="basic" method="POST" autocomplete="off" onsubmit="return validateBasic()">
                 <!-- 2 column grid layout with text inputs for the first and last names -->
                 <div class="row">
                   
-                  <% if(messages.error) { %>
-                    <div class="alert alert-danger">
-                      <strong><%= messages.error %> </strong>
-                    </div>
-                  <% } %> 
+                 
                   <h1 class="mb-3 h3">Register</h1>
                   <div class="col-md-12 mb-4">
                     <div class="form-outline">
@@ -133,7 +129,14 @@
                 </div>
 
                 
+                <% if(locals.name) { %>
+                  <div id="msg" class="alert alert-danger"><%-locals.name-%></div>
+         <% } %>
 
+
+         <% if(locals.alert) { %>
+          <div id="alert" class="alert alert-danger"><%- locals.alert -%></div>
+ <% } %>
                 <!-- Submit button -->
                 <button type="submit" class="btn btn-primary btn-block mb-4">
                   Sign up
@@ -153,6 +156,62 @@
   </section>
   <!-- Section: Design Block -->
     </div>
+
+  
+     <script>
+     function validateBasic() { 
+     
+     var name = document.basic.name.value;
+     var mail = document.basic.email.value;  
+     var password = document.basic.password.value;  
+     var gender = document.basic.gender.value;  
+     var status = document.basic.status.value;  
+ 
+     if (name === "" || mail === "" || password === "" || gender === "" || status === "") {
+         alert("Please fill all fields.");
+         return false;
+     }
+     
+     // Validate email
+     var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+     if (!emailRegex.test(mail)) {       
+         alert("Invalid email address.");         
+         return false;    
+     }     
+ 
+     // Validate name
+     var nameRegex = /^[A-Za-z\s]+$/;
+     if (!nameRegex.test(name)) {
+         alert("Name should only contain letters and spaces.");
+         return false;
+     }
+ 
+     // Validate password
+     if (password.length < 8) {
+         alert("Password should be at least 8 characters long.");
+         return false;
+     }
+ 
+     return true;
+ }
+ 
+
+</script>
+
+<script>
+  setTimeout(() => {
+    document.getElementById("msg").style.display="none"
+    
+  }, 3000);
+</script>
+
+<script>
+  setTimeout(() => {
+    document.getElementById("alert").style.display="none"
+    
+  }, 3000);
+</script>
+   
 
 
     <!-- JavaScript Bundle with Popper -->

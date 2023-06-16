@@ -8,7 +8,7 @@
     <div class="container">
         <div class="box-nav d-flex justify-between">
            <div class="filter">
-               <a href="/"><i class="fas fa-angle-double-left"></i> All Users</a>
+               <a href="/admin"><i class="fas fa-angle-double-left"></i> All Users</a>
            </div>
         </div>
         <div class="form-title text-center">
@@ -18,7 +18,7 @@
 
         <!-- add user form -->
          <!-- form handling -->
- <form method="POST" id="update_user">
+ <form method="POST" id="update_user" name="update-form" onsubmit="return validateBasic1()" >
     <div class="new_user">
         <div class="form-group">
             <label for="name" class="text-light">Name</label>
@@ -63,7 +63,33 @@
     </div>
 </main>
 <!-- /Main Site -->
+<script>
 
+        
+    function validateBasic1() { 
+    var name = document.forms["update-form"]["name"].value.trim();
+    var mail = document.forms["update-form"]["email"].value.trim();  
+    var gender = document.forms["update-form"]["gender"].value;  
+    var status = document.forms["update-form"]["status"].value;  
+    if (name === "" || mail === "" || gender === "" || status === "") {
+        alert("Please fill all fields.");
+        return false;
+    }
+    // Validate email
+    var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(mail)) {       
+        alert("Invalid email address.");         
+        return false;    
+    }     
+    // Validate name
+    var nameRegex = /^[A-Za-z\s]+$/;
+    if (!nameRegex.test(name)) {
+        alert("Name should only contain letters and spaces.");
+        return false;
+    }
+    return true;
+}
+</script>
 <!-- include footer -->
 <%- include('include/footer') %>
 <!-- /include footer -->

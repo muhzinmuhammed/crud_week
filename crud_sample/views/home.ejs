@@ -72,9 +72,12 @@
           <div>
             <h3 class="float-md-start mb-0 text-dark">Cover</h3>
             <nav class="nav nav-masthead justify-content-center float-md-end">
-              <form action="/logout?_method=DELETE" method="POST">
-                <button class="nav-link fw-bold py-1 px-0 btn p=3 btn-dark text-white" type="submit"  >Logout</button>
-              </form>
+              
+                <button class="nav-link fw-bold py-1 px-0 btn p=3 btn-dark text-white" type="submit">
+                  <a href="/logout">
+                  Logout</a>
+                </button>
+          
             </nav>
           </div>
         </header>
@@ -82,10 +85,8 @@
         <main class="px-3">
       
           <!-- <h1 class="text-dark">Hello <%= name %>  </h1> -->
-          <p class="lead text-dark">Welcome to my first NodeJs App</p>
-          <p class="lead">
-            <a href="/register" class="btn btn-lg btn-secondary fw-bold text-dark border-white bg-white">Learn more</a>
-          </p>
+          <p class="lead text-dark">Welcome <%= name %></p>
+         
         </main>
 
         <footer class="mt-auto text-dark-50">

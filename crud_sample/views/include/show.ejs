@@ -1,26 +1,30 @@
-<% for(var i=0;i < users.length;i++){ %>
+<% users.forEach(function(users) { %>
 
-
-<tr>
-    <td><%= i+1 %></td>
-    <td><%= users[i].name %></td>
-    <td><%= users[i].email %></td>
-    <td><%= users[i].gender %></td>
-    <td><%= users[i].status %></td>
-    <td>
-        <a href="/update-user?id=<%= users[i]._id%>" class="btn border-shadow update">
-            <span class="text-graident">
-                <i class="fas fa-pencil alt"></i>
-            </span>
-        </a>
-
-        <a class="btn btn-border-shadow delete"  id="btn" data-id=<%= users[i]._id%> >
-            <span class="text-graident">
-                <i class="fas fa-times"></i>
-            </span>
-        </a>
-    </td>
+    <tr>
+        
+        <td><%= users.name%></td>
+        <td><%= users.email%></td>
+        <td><%=users.gender%></td>
+        <td><%=users.status%></td>
+<td>
+<a href="/update-user?id=<%= users._id%>" class="btn border-shadow update">
+    <span class="text-gradient"><i class="fas fa-pencil-alt"></i></span>
+</a>
+<a class="btn border-shadow delete" data-id=<%= users._id%>>
+    <span class="text-gradient">
+        <i class="fas fa-times"></i></span>
+</a>
+<% if (users.isBlocked) { %>
+    <form action="/users/<%= users._id %>/unblock" method="post" style="display:inline;">
+     
+      <button type="submit" class="btn btn-danger text-white">Block</button>
+    </form>
+  <% } else { %>
+    <form action="/users/<%= users._id %>/block" method="post" style="display:inline;">
+     
+      <button type="submit" class="btn btn-success text-white">UnBlock</button>
+    </form>
+  <% } %>
+</td>
 </tr>
-
-
-<% } %>
+   <% }) %>

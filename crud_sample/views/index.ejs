@@ -28,21 +28,24 @@
                   <button type="submit" class="btn btn-primary">Search</button>
                  
                 </div>
+            </form>
 
                 <div class="text-center">
-                    <button type="submit" class="btn btn-info text-white"> <a href="/login">Logout</a></button>
+                    <button type="submit" class="btn btn-dark text-white"> 
+                        <a href="/logout">Logout</a></button>
                   
                   </div>
-     </form>
+
+    
 
             <!-- form handling -->
-            <form action="/" method="POST">
+            <form action="/admin" method="post">
                 <table class="table">
                     <thead class="thead-dark">
                         <tr>
-                            <th>ID</th>
+                           
                             <th>Name</th>
-                            <th>@Email</th>
+                            <th>Email</th>
                             <th>Gender</th>
                             <th>Status</th>
                             <th>Action</th>
@@ -59,16 +62,7 @@
     </main>
 <!-- /Main Site -->
 
-<script>
-    function sendData(e) {
-        fetch('getName',{
-            method:'POST',
-            headers:{'Content-Type':'application/json'},
-            body:JSON.stringify({payload:e.value})
-        });
-        
-    }
-</script>
+
 
 
 <!-- include footer -->

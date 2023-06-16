@@ -1,4 +1,4 @@
-<form action="/api/users"  method="POST" id="add_user">
+<form action="/api/users" method="POST" id="add_user" name="basic" onsubmit="return validateBasic()" >
     <div class="new_user">
         <div class="form-group">
             <label for="name" class="text-dark">Name</label>
@@ -34,8 +34,8 @@
         </div>
 
         <div class="form-group">
-            <label for="password" class="text-dark">password</label>
-            <input type="password" name="password" value="" placeholder="example@gmail.com">
+            <label for="password" class="text-dark">Password</label>
+            <input type="password" name="password" value="" placeholder="********">
         </div>
 
         <div class="form-group">
@@ -44,3 +44,53 @@
 
     </div>
 </form>
+<script>
+function validateBasic() {
+    var name = document.forms["basic"]["name"].value.trim();
+    var email = document.forms["basic"]["email"].value.trim();
+    var gender = document.forms["basic"]["gender"].value;
+    var status = document.forms["basic"]["status"].value;
+    var password = document.forms["basic"]["password"].value;
+
+    // Validation for name field
+    if (name == "") {
+        alert("Name must be filled out");
+        return false;
+    }
+
+    // Validation for email field
+    if (email == "") {
+        alert("Email must be filled out");
+        return false;
+    } else {
+        // regex for email validation
+        var email_regex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+
+        if (!email_regex.test(email)) {
+            alert("Invalid email address");
+            return false;
+        }
+    }
+
+    // Validation for gender field
+    if (gender == "") {
+        alert("Please select your gender");
+        return false;
+    }
+
+    // Validation for status field
+    if (status == "") {
+        alert("Please select status");
+        return false;
+    }
+
+    // Validation for password field
+    if (password == "") {
+        alert("Password must be filled out");
+        return false;
+    }
+
+    return true; // form is valid
+}
+
+</script>
